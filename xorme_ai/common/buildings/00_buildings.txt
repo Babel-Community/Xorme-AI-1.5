@@ -31,9 +31,17 @@ marketplace = {
 	cost = 100
 	time = 12
 
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
+
 	modifier = {
 		province_trade_power_modifier = 0.5
 	}
+	
 	on_built = {
 		add_development_from_building = {
 			building = marketplace
@@ -48,6 +56,10 @@ marketplace = {
 			value = 1
 		}
 	}
+
+	on_construction_started = { } #Fires when you start the construction,  ROOT - Province FROM - Country that started
+	on_construction_canceled = { } #Fires when you cancel the construction, ROOT - Province FROM - Country that canceled
+
 	on_obsolete = {
 	}
 
@@ -56,6 +68,14 @@ marketplace = {
 		modifier = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
 		}
 		modifier = {
 			factor = 10
@@ -67,7 +87,7 @@ marketplace = {
 		}
 		modifier = {
 			factor = 30
-			province_has_center_of_trade_of_level = 1
+			province_has_center_of_trade_of_level = 3
 		}
 		modifier = {
 			factor = 100.0
@@ -79,6 +99,12 @@ marketplace = {
 workshop = {
 	cost = 100
 	time = 12
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
 	modifier = {
 		local_production_efficiency = 0.5
 	}
@@ -106,6 +132,14 @@ workshop = {
 		modifier = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
 		}
 		#FROM AUTONOMY
 		modifier = {
@@ -176,74 +210,63 @@ workshop = {
 temple = {
 	cost = 100
 	time = 12
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
 	modifier = {
 		local_tax_modifier = 0.4
 	}
 	on_built = {
-		if = {
-			limit = {
-				FROM = {
-					OR = {
-						religion = buddhism
-						religion = mahayana
-						religion = vajrayana
-					}
-					has_estate_privilege = estate_church_karma_temples
-				}
-			}
-			FROM = {
-				add_karma = 3
-			}
-		}
-		if = {
-			limit = {
-				FROM = {
-					religion = catholic
-					has_estate_privilege = estate_church_influence_temples
-				}
-			}
-			FROM = {
-				add_papal_influence = 3
-			}
-		}
+		on_province_tax_building_built_estate_privileges_effect = yes
 		add_development_from_building = {
 			building = temple
 			type = tax
 			value = 1
 		}
+		if = {
+			limit = {
+				FROM = { has_government_attribute = on_church_built_clergy_loyalty }
+			}
+			FROM = {
+				add_estate_loyalty = {
+					estate = estate_church
+					loyalty = 2
+				}
+			}
+		}
+		if = {
+			limit = {
+				FROM = { has_government_attribute = temples_modifier }
+				owned_by = FROM 
+			}
+			add_province_modifier = {
+				name = gov_expanded_temple_rights_mod
+				duration = -1
+			}
+		}
 	}
 	on_destroyed = {
-		if = {
-			limit = {
-				FROM = {
-					OR = {
-						religion = buddhism
-						religion = mahayana
-						religion = vajrayana
-					}
-					has_estate_privilege = estate_church_karma_temples
-				}
-			}
-			FROM = {
-				add_karma = -3
-			}
-		}
-		if = {
-			limit = {
-				FROM = {
-					religion = catholic
-					has_estate_privilege = estate_church_influence_temples
-				}
-			}
-			FROM = {
-				add_papal_influence = -3
-			}
-		}
+		on_province_tax_building_destroyed_estate_privileges_effect = yes
 		remove_development_from_building = {
 			building = temple
 			type = tax
 			value = 1
 		}
+		if = {
+			limit = {
+				FROM = { has_government_attribute = on_church_built_clergy_loyalty }
+			}
+			FROM = {
+				add_estate_loyalty = {
+					estate = estate_church
+					loyalty = -2
+				}
+			}
+		}
+		remove_province_modifier = gov_expanded_temple_rights_mod
 	}
 	on_obsolete = {
 	}
@@ -251,7 +274,9 @@ temple = {
 		factor = 2.5
 		modifier = {
 			factor = 0
-			FROM = { num_of_loans = 1 }
+			OR = {
+				FROM = { num_of_loans = 1 }
+			}
 		}
 		#FROM AUTONOMY
 		modifier = {
@@ -311,6 +336,10 @@ temple = {
 			factor = 100.0
 			has_province_modifier = xorme_ai_agenda_building_spot
 		}
+		modifier = {
+			factor = 100.0
+			num_free_building_slots = 3
+		}
 		#FROM CASH
 		modifier = {
 			factor = 100.0
@@ -324,6 +353,12 @@ temple = {
 barracks = {
 	cost = 100
 	time = 12
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
 	modifier = {
 		local_manpower_modifier = 0.5
 	}
@@ -331,11 +366,22 @@ barracks = {
 		if = {
 			limit = {
 				FROM = {
-					has_reform = corvee_reform
+					has_government_attribute = manpower_sailors_on_build
 				}
 			}
 			FROM = {
 				add_manpower = 1
+			}
+		}
+		if = {
+			limit = {
+				FROM = {
+					mission_completed = jap_tanegashima_teppo
+					has_dlc = "Cradle of Civilization" 
+				}
+			}
+			FROM = {
+				add_army_professionalism = 0.001
 			}
 		}
 		add_development_from_building = {
@@ -343,16 +389,30 @@ barracks = {
 			type = manpower
 			value = 1
 		}
+		update_improved_military_buildings_modifier = {
+			building = barracks
+		}
 	}
 	on_destroyed = {
 		if = {
 			limit = {
 				FROM = {
-					has_reform = corvee_reform
+					has_government_attribute = manpower_sailors_on_build
 				}
 			}
 			FROM = {
 				add_manpower = -1
+			}
+		}
+		if = {
+			limit = {
+				FROM = {
+					mission_completed = jap_tanegashima_teppo
+					has_dlc = "Cradle of Civilization" 
+				}
+			}
+			FROM = {
+				add_army_professionalism = -0.001
 			}
 		}
 		remove_development_from_building = {
@@ -360,15 +420,26 @@ barracks = {
 			type = manpower
 			value = 1
 		}
+		update_improved_military_buildings_modifier = {
+			building = barracks
+		}
 	}
 	on_obsolete = {
 	}
 
 	ai_will_do = {
-		factor = 2.5
+		factor = 4.5
 		modifier = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
 		}
 		#FROM AUTONOMY
 		modifier = {
@@ -415,6 +486,10 @@ barracks = {
 		}
 		modifier = {
 			factor = 100.0
+			num_free_building_slots = 3
+		}
+		modifier = {
+			factor = 100.0
 			has_province_modifier = xorme_ai_agenda_building_spot
 		}
 		#FROM CASH
@@ -431,12 +506,18 @@ shipyard = {
 	cost = 100
 	time = 12
 	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
 		has_port = yes
 	}
 	modifier = {
 		naval_forcelimit = 2
 		ship_recruit_speed = -0.25
 		local_ship_repair = 0.25
+		local_has_man_of_war = yes
+		local_has_galleass = yes
 	}
 	on_built = {
 		add_development_from_building = {
@@ -451,15 +532,27 @@ shipyard = {
 			type = production
 			value = 1
 		}
+		if = {
+			limit = { has_province_modifier = sca_swe_danish_shipyard }
+			remove_province_modifier = sca_swe_danish_shipyard
+		}
 	}
 	on_obsolete = {
 	}
 
 	ai_will_do = {
-		factor = 2.5
+		factor = 4.5
 		modifier = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
 		}
 		#FROM AUTONOMY
 		modifier = {
@@ -500,6 +593,10 @@ shipyard = {
 			factor = 9.0
 			FROM = { num_of_ports = 15 }
 		}
+		modifier = {
+			factor = 10.0
+			NOT = { development = 7 }
+		}
 		#BUILDINGS
 		modifier = {
 			factor = 10.0
@@ -508,6 +605,10 @@ shipyard = {
 		modifier = {
 			factor = 100.0
 			has_province_modifier = xorme_ai_agenda_building_spot
+		}
+		modifier = {
+			factor = 100.0
+			num_free_building_slots = 4
 		}
 		#FROM CASH
 		modifier = {
@@ -522,8 +623,9 @@ shipyard = {
 fort_15th = {
 	cost = 200
 	time = 30
-	
+
 	build_trigger = {
+	NOT = { has_province_modifier = verdant_link }
 		if = {
 			limit = { FROM = { ai = yes } }
 			all_neighbor_province = {
@@ -543,6 +645,52 @@ fort_15th = {
 	}
 
 	on_built = {
+		if = {
+			limit = {
+				FROM = { NOT = { mil_tech = 14 } has_government_attribute = on_fort_built_nobles_loyalty }
+			}
+			FROM = {
+				if = {
+					limit = {
+						has_estate = estate_nobles
+					}
+					add_estate_loyalty = {
+						estate = estate_nobles
+						loyalty = 5
+					}
+				}
+				if = {
+					limit = {
+						has_estate = estate_maratha
+					}
+					add_estate_loyalty = {
+						estate = estate_maratha
+						loyalty = 5
+					}
+				}
+				if = {
+					limit = {
+						has_estate = estate_rajput
+					}
+					add_estate_loyalty = {
+						estate = estate_rajput
+						loyalty = 5
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				owner = {
+					has_estate_privilege = estate_nobles_development_of_castles
+				}
+				NOT = { has_province_modifier = estate_nobles_development_of_castles_mod }
+			}
+			add_province_modifier = {
+				name = estate_nobles_development_of_castles_mod
+				duration = -1
+			}
+		}
 	}
 
 	on_destroyed = {
@@ -553,13 +701,28 @@ fort_15th = {
 				}
 			}
 			FROM = { add_treasury = 100 }
+		}		
+		if = {
+			limit = {
+				has_province_modifier = estate_nobles_development_of_castles_mod
+			}
+			remove_province_modifier = estate_nobles_development_of_castles_mod
 		}
 	}
+
+	# THIS = Province, FROM = Destroyer, Will not be called on buildings destroyed!
+	on_obsolete = {
+	}
+
 	onmap = yes
 	influencing_fort = yes
 
 	ai_will_do = {
-		factor = 0.2
+		factor = 1.2
+		modifier = {
+			factor = 1000.0
+			is_capital = yes
+		}
 	}
 }
 
@@ -569,6 +732,10 @@ coastal_defence = {
 	time = 12
 	build_trigger = {
 		has_port = yes
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
 	}
 	modifier = {
 		blockade_force_required = 0.5
@@ -578,6 +745,22 @@ coastal_defence = {
 
 	ai_will_do = {
 		factor = 1
+		modifier = {
+			factor = 0
+			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			has_province_modifier = slaves_raided
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
+		}
 	}
 }
 
@@ -588,16 +771,32 @@ coastal_defence = {
 courthouse = {
 	cost = 100
 	time = 12
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
 	modifier = {
 		local_state_maintenance_modifier = -0.25
 		local_autonomy = -0.1
 		local_governing_cost = -0.25
+		allowed_num_of_buildings = 1
 	}
 	on_built = {
 		add_development_from_building = {
 			building = courthouse
 			type = tax
 			value = 1
+		}
+		if = { 
+			limit = { 
+				FROM = { has_country_flag = fra_courthouse_bonus_flag }
+			}
+			add_province_modifier = {
+				name = fra_improved_court_houses_modifier
+				duration = -1 
+			}
 		}
 	}
 	on_destroyed = {
@@ -606,14 +805,23 @@ courthouse = {
 			type = tax
 			value = 1
 		}
+		remove_province_modifier = fra_improved_court_houses_modifier
 	}
 	on_obsolete = {
 	}
 	ai_will_do = {
-		factor = 7.5
+		factor = 15
 		modifier = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
 		}
 		modifier = {
 			factor = 0
@@ -669,17 +877,23 @@ dock = {
 	cost = 100
 	time = 12
 	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
 		has_port = yes
 	}
 	modifier = {
 		local_sailors_modifier = 0.5
+		local_has_man_of_war = yes
+		local_has_galleass = yes
 	}
-	
+
 	on_built = {
 		if = {
 			limit = {
 				FROM = {
-					has_reform = corvee_reform
+					has_government_attribute = manpower_sailors_on_build
 				}
 			}
 			FROM = {
@@ -692,12 +906,12 @@ dock = {
 			value = 1
 		}
 	}
-	
+
 	on_destroyed = {
 		if = {
 			limit = {
 				FROM = {
-					has_reform = corvee_reform
+					has_government_attribute = manpower_sailors_on_build
 				}
 			}
 			FROM = {
@@ -720,7 +934,19 @@ dock = {
 			FROM = { num_of_loans = 1 }
 		}
 		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
+		}
+		modifier = {
 			factor = 0.5
+		}
+		modifier = {
+			factor = 100.0
+			num_free_building_slots = 5
 		}
 	}
 }
@@ -728,6 +954,13 @@ dock = {
 regimental_camp = {
 	cost = 200
 	time = 12
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
+
 	modifier = {
 		land_forcelimit = 1
 	}
@@ -738,6 +971,20 @@ regimental_camp = {
 			type = manpower
 			value = 1
 		}
+		update_improved_military_buildings_modifier = {
+			building = regimental_camp
+		}
+		if = {
+			limit = {
+				FROM = {
+					mission_completed = jap_tanegashima_teppo
+					has_dlc = "Cradle of Civilization" 
+				}
+			}
+			FROM = {
+				add_army_professionalism = 0.001
+			}
+		}
 	}
 	on_destroyed = {
 		remove_development_from_building = {
@@ -745,15 +992,37 @@ regimental_camp = {
 			type = manpower
 			value = 1
 		}
+		update_improved_military_buildings_modifier = {
+			building = regimental_camp
+		}
+		if = {
+			limit = {
+				FROM = {
+					mission_completed = jap_tanegashima_teppo
+					has_dlc = "Cradle of Civilization" 
+				}
+			}
+			FROM = {
+				add_army_professionalism = -0.001
+			}
+		}
 	}
 	on_obsolete = {
 	}
 
 	ai_will_do = {
-		factor = 2.5
+		factor = 5.5
 		modifier = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
 		}
 		#FROM AUTONOMY
 		modifier = {
@@ -794,6 +1063,10 @@ regimental_camp = {
 			factor = 9.0
 			FROM = { num_of_cities = 15 }
 		}
+		modifier = {
+			factor = 20.0
+			NOT = { development = 7 }
+		}
 		#BUILDINGS
 		modifier = {
 			factor = 100.0
@@ -802,6 +1075,10 @@ regimental_camp = {
 		modifier = {
 			factor = 100.0
 			has_province_modifier = xorme_ai_agenda_building_spot
+		}
+		modifier = {
+			factor = 100.0
+			num_free_building_slots = 2
 		}
 		#FROM CASH
 		modifier = {
@@ -820,15 +1097,19 @@ fort_16th = {
 	build_trigger = {
 		if = {
 			limit = { FROM = { ai = yes } }
-			all_neighbor_province = {
-				NOT = {
-					OR = {
-						xorme_ai_is_building_fort_trigger = yes
-						xorme_ai_has_any_fort_trigger = yes
-						has_influencing_fort = yes
+			OR = {
+				is_capital_of = FROM
+				all_neighbor_province = {
+					NOT = {
+						OR = {
+							xorme_ai_is_building_fort_trigger = yes
+							xorme_ai_has_any_fort_trigger = yes
+							has_influencing_fort = yes
+						}
 					}
-				}
+				}	
 			}
+			FROM = { NOT = { num_of_loans = 4 } }
 		}
 	}
 
@@ -836,9 +1117,54 @@ fort_16th = {
 	modifier = {
 		fort_level = 4
 	}
-	
-	on_built = {
 
+	on_built = {
+		if = {
+			limit = {
+				FROM = { NOT = { mil_tech = 19 } has_government_attribute = on_fort_built_nobles_loyalty }
+			}
+			FROM = {
+				if = {
+					limit = {
+						has_estate = estate_nobles
+					}
+					add_estate_loyalty = {
+						estate = estate_nobles
+						loyalty = 5
+					}
+				}
+				if = {
+					limit = {
+						has_estate = estate_maratha
+					}
+					add_estate_loyalty = {
+						estate = estate_maratha
+						loyalty = 5
+					}
+				}
+				if = {
+					limit = {
+						has_estate = estate_rajput
+					}
+					add_estate_loyalty = {
+						estate = estate_rajput
+						loyalty = 5
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				owner = {
+					has_estate_privilege = estate_nobles_development_of_castles
+				}
+				NOT = { has_province_modifier = estate_nobles_development_of_castles_mod }
+			}
+			add_province_modifier = {
+				name = estate_nobles_development_of_castles_mod
+				duration = -1
+			}
+		}
 	}
 
 	on_destroyed = {
@@ -851,14 +1177,26 @@ fort_16th = {
 			FROM = { add_treasury = 200 }
 		}
 	}
+	on_obsolete = {
+		if = {
+			limit = {
+				has_province_modifier = estate_nobles_development_of_castles_mod
+			}
+			remove_province_modifier = estate_nobles_development_of_castles_mod
+		}
+	}
 	onmap = yes
 	influencing_fort = yes
 
 	ai_will_do = {
-		factor = 0.4
+		factor = 1.4
 		modifier = {
 			factor = 1000.0
 			has_building = fort_15th
+		}
+		modifier = {
+			factor = 1000.0
+			is_capital = yes
 		}
 	}
 }
@@ -869,6 +1207,10 @@ naval_battery = {
 	cost = 200
 	time = 12
 	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
 		has_port = yes
 	}
 	modifier = {
@@ -880,6 +1222,18 @@ naval_battery = {
 
 	ai_will_do = {
 		factor = 1
+		modifier = {
+			factor = 100.0
+			has_province_modifier = slaves_raided
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
+		}
+		modifier = {
+			factor = 10
+			has_building = coastal_defence
+		}
 	}
 }
 
@@ -891,37 +1245,20 @@ cathedral = {
 
 	cost = 300
 	time = 12
+
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
+
 	modifier = {
 		local_missionary_strength = 0.03
 		local_tax_modifier = 0.6
 	}
 	on_built = {
-		if = {
-			limit = {
-				FROM = {
-					OR = {
-						religion = buddhism
-						religion = mahayana
-						religion = vajrayana
-					}
-					has_estate_privilege = estate_church_karma_temples
-				}
-			}
-			FROM = {
-				add_karma = 3
-			}
-		}
-		if = {
-			limit = {
-				FROM = {
-					religion = catholic
-					has_estate_privilege = estate_church_influence_temples
-				}
-			}
-			FROM = {
-				add_papal_influence = 3
-			}
-		}
+		on_province_tax_building_built_estate_privileges_effect = yes
 		add_development_from_upgrading_or_building = {
 			building = cathedral
 			obsolete_building = temple
@@ -929,39 +1266,46 @@ cathedral = {
 			value = 2
 			upgrade_value = 1
 		}
+		if = {
+			limit = {
+				FROM = { has_government_attribute = on_church_built_clergy_loyalty }
+			}
+			FROM = {
+				add_estate_loyalty = {
+					estate = estate_church
+					loyalty = 5
+				}
+			}
+		}
+		if = {
+			limit = {
+				FROM = { has_government_attribute = temples_modifier }
+			}
+			add_province_modifier = {
+				name = gov_expanded_temple_rights_mod
+				duration = -1
+			}
+		}
 	}
 	on_destroyed = {
-		if = {
-			limit = {
-				FROM = {
-					OR = {
-						religion = buddhism
-						religion = mahayana
-						religion = vajrayana
-					}
-					has_estate_privilege = estate_church_karma_temples
-				}
-			}
-			FROM = {
-				add_karma = -3
-			}
-		}
-		if = {
-			limit = {
-				FROM = {
-					religion = catholic
-					has_estate_privilege = estate_church_influence_temples
-				}
-			}
-			FROM = {
-				add_papal_influence = -3
-			}
-		}
+		on_province_tax_building_destroyed_estate_privileges_effect = yes
 		remove_development_from_building = {
 			building = cathedral
 			type = tax
-			value = 3
+			value = 2
 		}
+		if = {
+			limit = {
+				FROM = { has_government_attribute = on_church_built_clergy_loyalty }
+			}
+			FROM = {
+				add_estate_loyalty = {
+					estate = estate_church
+					loyalty = -5
+				}
+			}
+		}
+		remove_province_modifier = gov_expanded_temple_rights_mod
 	}
 	on_obsolete = {
 	}
@@ -971,6 +1315,14 @@ cathedral = {
 		modifier = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
 		}
 		#FROM BUILDINGS
 		modifier = {
@@ -1008,7 +1360,7 @@ cathedral = {
 		}
 		#FROM UPGRADE
 		modifier = {
-			factor = 5.0
+			factor = 25.0
 			has_building = temple
 		}
 		#FROM TRADE GOODS
@@ -1036,6 +1388,10 @@ cathedral = {
 			factor = 100.0
 			has_province_modifier = xorme_ai_agenda_building_spot
 		}
+		modifier = {
+			factor = 100.0
+			num_free_building_slots = 3
+		}
 		#FROM CASH
 		modifier = {
 			factor = 100.0
@@ -1049,6 +1405,14 @@ cathedral = {
 university = {
 	cost = 300
 	time = 12
+
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
+
 	modifier = {
 		local_development_cost = -0.20
 		allowed_num_of_buildings = 1
@@ -1077,6 +1441,14 @@ university = {
 		modifier = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
 		}
 		modifier = {
 			factor = 0
@@ -1134,6 +1506,12 @@ trade_depot = {
 	time = 12
 
 	make_obsolete = marketplace
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
 
 	modifier = {
 		province_trade_power_modifier = 1
@@ -1164,9 +1542,17 @@ trade_depot = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
 		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
+		}
 		#FROM UPGRADE
 		modifier = {
-			factor = 5.0
+			factor = 25.0
 			has_building = marketplace
 		}
 		modifier = {
@@ -1179,7 +1565,7 @@ trade_depot = {
 		}
 		modifier = {
 			factor = 30
-			province_has_center_of_trade_of_level = 1
+			province_has_center_of_trade_of_level = 3
 		}
 		modifier = {
 			factor = 100.0
@@ -1195,12 +1581,18 @@ grand_shipyard = {
 	make_obsolete = shipyard
 
 	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
 		has_port = yes
 	}
 	modifier = {
 		naval_forcelimit = 4
 		ship_recruit_speed = -0.50
 		local_ship_repair = 0.50
+		local_has_man_of_war = yes
+		local_has_galleass = yes
 	}
 
 	on_built = {
@@ -1218,15 +1610,27 @@ grand_shipyard = {
 			type = production
 			value = 2
 		}
+		if = {
+			limit = { has_province_modifier = sca_swe_danish_shipyard }
+			remove_province_modifier = sca_swe_danish_shipyard
+		}
 	}
 	on_obsolete = {
 	}
 
 	ai_will_do = {
-		factor = 3.5
+		factor = 6.5
 		modifier = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
 		}
 		#FROM AUTONOMY
 		modifier = {
@@ -1256,7 +1660,7 @@ grand_shipyard = {
 		}
 		#FROM UPGRADE
 		modifier = {
-			factor = 5.0
+			factor = 25.0
 			has_building = shipyard
 		}
 		#FROM BASE DEV
@@ -1272,6 +1676,10 @@ grand_shipyard = {
 			factor = 9.0
 			FROM = { num_of_ports = 15 }
 		}
+		modifier = {
+			factor = 10.0
+			NOT = { development = 7 }
+		}
 		#BUILDINGS
 		modifier = {
 			factor = 10.0
@@ -1280,6 +1688,10 @@ grand_shipyard = {
 		modifier = {
 			factor = 100.0
 			has_province_modifier = xorme_ai_agenda_building_spot
+		}
+		modifier = {
+			factor = 100.0
+			num_free_building_slots = 3
 		}
 		#FROM CASH
 		modifier = {
@@ -1296,16 +1708,22 @@ training_fields = {
 	time = 12
 
 	make_obsolete = barracks
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
 
 	modifier = {
 		local_manpower_modifier = 1
 	}
-	
+
 	on_built = {
 		if = {
 			limit = {
 				FROM = {
-					has_reform = corvee_reform
+					has_government_attribute = manpower_sailors_on_build
 				}
 			}
 			FROM = {
@@ -1319,25 +1737,53 @@ training_fields = {
 			value = 2
 			upgrade_value = 1
 		}
+		update_improved_military_buildings_modifier = {
+			building = training_fields
+		}
+		if = {
+			limit = {
+				FROM = {
+					mission_completed = jap_tanegashima_teppo
+					has_dlc = "Cradle of Civilization" 
+				}
+			}
+			FROM = {
+				add_army_professionalism = 0.001
+			}
+		}
 	}
 	on_destroyed = {
 		if = {
 			limit = {
 				FROM = {
-					has_reform = corvee_reform
+					has_government_attribute = manpower_sailors_on_build
 				}
 			}
 			FROM = {
 				add_manpower = -1
 			}
 		}
-	}
-	on_obsolete = {
+		update_improved_military_buildings_modifier = {
+			building = training_fields
+		}
+		if = {
+			limit = {
+				FROM = {
+					mission_completed = jap_tanegashima_teppo
+					has_dlc = "Cradle of Civilization" 
+				}
+			}
+			FROM = {
+				add_army_professionalism = -0.001
+			}
+		}
 		remove_development_from_building = {
 			building = training_fields
 			type = manpower
 			value = 2
 		}
+	}
+	on_obsolete = {
 	}
 
 	ai_will_do = {
@@ -1345,6 +1791,14 @@ training_fields = {
 		modifier = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
 		}
 		#FROM AUTONOMY
 		modifier = {
@@ -1368,7 +1822,7 @@ training_fields = {
 		}
 		#FROM UPGRADE
 		modifier = {
-			factor = 5.0
+			factor = 25.0
 			has_building = barracks
 		}
 		#FROM BASE DEV
@@ -1415,15 +1869,19 @@ fort_17th = {
 	build_trigger = {
 		if = {
 			limit = { FROM = { ai = yes } }
-			all_neighbor_province = {
-				NOT = {
-					OR = {
-						xorme_ai_is_building_fort_trigger = yes
-						xorme_ai_has_any_fort_trigger = yes
-						has_influencing_fort = yes
+			OR = {
+				is_capital_of = FROM
+				all_neighbor_province = {
+					NOT = {
+						OR = {
+							xorme_ai_is_building_fort_trigger = yes
+							xorme_ai_has_any_fort_trigger = yes
+							has_influencing_fort = yes
+						}
 					}
-				}
+				}	
 			}
+			FROM = { NOT = { num_of_loans = 4 } }
 		}
 	}
 
@@ -1434,6 +1892,52 @@ fort_17th = {
 	}
 
 	on_built = {
+		if = {
+			limit = {
+				FROM = { NOT = { mil_tech = 19 } has_government_attribute = on_fort_built_nobles_loyalty }
+			}
+			FROM = {
+				if = {
+					limit = {
+						has_estate = estate_nobles
+					}
+					add_estate_loyalty = {
+						estate = estate_nobles
+						loyalty = 5
+					}
+				}
+				if = {
+					limit = {
+						has_estate = estate_maratha
+					}
+					add_estate_loyalty = {
+						estate = estate_maratha
+						loyalty = 5
+					}
+				}
+				if = {
+					limit = {
+						has_estate = estate_rajput
+					}
+					add_estate_loyalty = {
+						estate = estate_rajput
+						loyalty = 5
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				owner = {
+					has_estate_privilege = estate_nobles_development_of_castles
+				}
+				NOT = { has_province_modifier = estate_nobles_development_of_castles_mod }
+			}
+			add_province_modifier = {
+				name = estate_nobles_development_of_castles_mod
+				duration = -1
+			}
+		}
 	}
 
 	on_destroyed = {
@@ -1445,18 +1949,33 @@ fort_17th = {
 			}
 			FROM = { add_treasury = 300 }
 		}
+		if = {
+			limit = {
+				has_province_modifier = estate_nobles_development_of_castles_mod
+			}
+			remove_province_modifier = estate_nobles_development_of_castles_mod
+		}
 	}
+
+	# THIS = Province, FROM = Destroyer, Will not be called on buildings destroyed!
+	on_obsolete = {
+	}
+
 	onmap = yes
 	influencing_fort = yes
 
 	ai_will_do = {
-		factor = 0.6
+		factor = 1.6
 		modifier = {
 			factor = 1000.0
 			OR = {
 				has_building = fort_15th
 				has_building = fort_16th
 			}
+		}
+		modifier = {
+			factor = 1000.0
+			is_capital = yes
 		}
 	}
 }
@@ -1471,6 +1990,13 @@ stock_exchange = {
 	time = 12
 
 	make_obsolete = trade_depot
+	
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
 
 	modifier = {
 		province_trade_power_modifier = 1.25
@@ -1481,20 +2007,24 @@ stock_exchange = {
 			limit = {
 				has_province_flag = built_dev_trade_depot
 			}
-			add_development_from_building = {
+			add_development_from_upgrading_or_building = {
 				building = stock_exchange
+				obsolete_building = trade_depot
 				type = production
-				value = 1
+				value = 3
+				upgrade_value = 1
 			}
 		}
 		else_if = {
 			limit = {
 				has_province_flag = built_dev_marketplace
 			}
-			add_development_from_building = {
+			add_development_from_upgrading_or_building = {
 				building = stock_exchange
+				obsolete_building = marketplace
 				type = production
-				value = 2
+				value = 3
+				upgrade_value = 2
 			}
 		}
 		else = {
@@ -1521,9 +2051,17 @@ stock_exchange = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
 		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
+		}
 		#FROM UPGRADE
 		modifier = {
-			factor = 5.0
+			factor = 25.0
 			OR = {
 				has_building = marketplace
 				has_building = trade_depot
@@ -1539,7 +2077,7 @@ stock_exchange = {
 		}
 		modifier = {
 			factor = 30
-			province_has_center_of_trade_of_level = 1
+			province_has_center_of_trade_of_level = 3
 		}
 		modifier = {
 			factor = 100.0
@@ -1553,6 +2091,14 @@ counting_house = {
 	time = 12
 
 	make_obsolete = workshop
+
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
+
 	modifier = {
 		local_production_efficiency = 1
 	}
@@ -1584,6 +2130,14 @@ counting_house = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
 		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
+		}
 		#FROM AUTONOMY
 		modifier = {
 			factor = 0.25
@@ -1603,7 +2157,7 @@ counting_house = {
 		}
 		#FROM UPGRADE
 		modifier = {
-			factor = 5.0
+			factor = 25.0
 			has_building = workshop
 		}
 		#FROM BASE DEV
@@ -1660,10 +2214,18 @@ town_hall = {
 
 	make_obsolete = courthouse
 
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
+
 	modifier = {
 		local_state_maintenance_modifier = -0.5
 		local_autonomy = -0.2
 		local_governing_cost = -0.5
+		allowed_num_of_buildings = 1
 	}
 
 	on_built = {
@@ -1674,6 +2236,16 @@ town_hall = {
 			value = 2
 			upgrade_value = 1
 		}
+		if = { 
+			limit = { 
+				FROM = { has_country_flag = fra_courthouse_bonus_flag }
+				NOT = { has_province_modifier = fra_improved_court_houses_modifier }
+			}
+			add_province_modifier = {
+				name = fra_improved_court_houses_modifier
+				duration = -1 
+			}
+		}
 	}
 	on_destroyed = {
 		remove_development_from_building = {
@@ -1681,15 +2253,24 @@ town_hall = {
 			type = tax
 			value = 2
 		}
+		remove_province_modifier = fra_improved_court_houses_modifier 
 	}
 	on_obsolete = {
 	}
 
 	ai_will_do = {
-		factor = 10.0
+		factor = 25.0
 		modifier = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
 		}
 		modifier = {
 			factor = 0
@@ -1716,7 +2297,7 @@ town_hall = {
 		}
 		#FROM UPGRADE
 		modifier = {
-			factor = 5.0
+			factor = 25.0
 			has_building = courthouse
 		}
 		#FROM GOV CAP
@@ -1753,18 +2334,24 @@ drydock = {
 	make_obsolete = dock
 
 	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
 		has_port = yes
 	}
 
 	modifier = {
 		local_sailors_modifier = 1.0
+		local_has_man_of_war = yes
+		local_has_galleass = yes
 	}
-	
+
 	on_built = {
 		if = {
 			limit = {
 				FROM = {
-					has_reform = corvee_reform
+					has_government_attribute = manpower_sailors_on_build
 				}
 			}
 			FROM = {
@@ -1779,12 +2366,12 @@ drydock = {
 			upgrade_value = 1
 		}
 	}
-	
+
 	on_destroyed = {
 		if = {
 			limit = {
 				FROM = {
-					has_reform = corvee_reform
+					has_government_attribute = manpower_sailors_on_build
 				}
 			}
 			FROM = {
@@ -1807,6 +2394,14 @@ drydock = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
 		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
+		}
 	}
 }
 
@@ -1815,6 +2410,13 @@ conscription_center = {
 	time = 12
 
 	make_obsolete = regimental_camp
+
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
 
 	modifier = {
 		land_forcelimit = 2
@@ -1827,6 +2429,20 @@ conscription_center = {
 			value = 2
 			upgrade_value = 1
 		}
+		update_improved_military_buildings_modifier = {
+			building = conscription_center
+		}
+		if = {
+			limit = {
+				FROM = {
+					mission_completed = jap_tanegashima_teppo
+					has_dlc = "Cradle of Civilization" 
+				}
+			}
+			FROM = {
+				add_army_professionalism = 0.001
+			}
+		}
 	}
 	on_destroyed = {
 		remove_development_from_building = {
@@ -1834,15 +2450,37 @@ conscription_center = {
 			type = manpower
 			value = 2
 		}
+		update_improved_military_buildings_modifier = {
+			building = conscription_center
+		}
+		if = {
+			limit = {
+				FROM = {
+					mission_completed = jap_tanegashima_teppo
+					has_dlc = "Cradle of Civilization" 
+				}
+			}
+			FROM = {
+				add_army_professionalism = -0.001
+			}
+		}
 	}
 	on_obsolete = {
 	}
 
 	ai_will_do = {
-		factor = 3.5
+		factor = 6.5
 		modifier = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
 		}
 		#FROM AUTONOMY
 		modifier = {
@@ -1872,7 +2510,7 @@ conscription_center = {
 		}
 		#FROM UPGRADE
 		modifier = {
-			factor = 5.0
+			factor = 25.0
 			has_building = regimental_camp
 		}
 		#FROM BASE DEV
@@ -1887,6 +2525,10 @@ conscription_center = {
 		modifier = {
 			factor = 9.0
 			FROM = { num_of_cities = 15 }
+		}
+		modifier = {
+			factor = 20.0
+			NOT = { development = 7 }
 		}
 		#BUILDINGS
 		modifier = {
@@ -1910,19 +2552,23 @@ conscription_center = {
 fort_18th = {
 	cost = 800
 	time = 30
-	
+
 	build_trigger = {
 		if = {
 			limit = { FROM = { ai = yes } }
-			all_neighbor_province = {
-				NOT = {
-					OR = {
-						xorme_ai_is_building_fort_trigger = yes
-						xorme_ai_has_any_fort_trigger = yes
-						has_influencing_fort = yes
+			OR = {
+				is_capital_of = FROM
+				all_neighbor_province = {
+					NOT = {
+						OR = {
+							xorme_ai_is_building_fort_trigger = yes
+							xorme_ai_has_any_fort_trigger = yes
+							has_influencing_fort = yes
+						}
 					}
-				}
+				}	
 			}
+			FROM = { NOT = { num_of_loans = 4 } }
 		}
 	}
 
@@ -1933,23 +2579,73 @@ fort_18th = {
 	}
 
 	on_built = {
+		if = {
+			limit = {
+				FROM = { has_government_attribute = on_fort_built_nobles_loyalty }
+			}
+			FROM = {
+				if = {
+					limit = {
+						has_estate = estate_nobles
+					}
+					add_estate_loyalty = {
+						estate = estate_nobles
+						loyalty = 5
+					}
+				}
+				if = {
+					limit = {
+						has_estate = estate_maratha
+					}
+					add_estate_loyalty = {
+						estate = estate_maratha
+						loyalty = 5
+					}
+				}
+				if = {
+					limit = {
+						has_estate = estate_rajput
+					}
+					add_estate_loyalty = {
+						estate = estate_rajput
+						loyalty = 5
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				owner = {
+					has_estate_privilege = estate_nobles_development_of_castles
+				}
+				NOT = { has_province_modifier = estate_nobles_development_of_castles_mod }
+			}
+			add_province_modifier = {
+				name = estate_nobles_development_of_castles_mod
+				duration = -1
+			}
+		}
 	}
 
+	# THIS = Province, FROM = Destroyer, Will not be called on buildings made obsolete!
 	on_destroyed = {
 		if = {
 			limit = {
-				FROM = {
-					ai = yes
-				}
+				has_province_modifier = estate_nobles_development_of_castles_mod
 			}
-			FROM = { add_treasury = 400 }
+			remove_province_modifier = estate_nobles_development_of_castles_mod
 		}
 	}
+
+	# THIS = Province, FROM = Destroyer, Will not be called on buildings destroyed!
+	on_obsolete = {
+	}
+
 	onmap = yes
 	influencing_fort = yes
 
 	ai_will_do = {
-		factor = 0.8
+		factor = 1.8
 		modifier = {
 			factor = 1000.0
 			OR = {
@@ -1957,6 +2653,10 @@ fort_18th = {
 				has_building = fort_16th
 				has_building = fort_17th
 			}
+		}
+		modifier = {
+			factor = 1000.0
+			is_capital = yes
 		}
 	}
 }
@@ -1976,6 +2676,12 @@ manufactory = {
 #If trade good assignment changes, also update scripted trigger "has_manufactory trigger"!
 
 wharf = {
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
 	manufactory = {
 		naval_supplies
 		fish
@@ -1988,12 +2694,23 @@ wharf = {
 			type = production
 			value = 2
 		}
+		add_dev_from_building = {
+			building = manufactory 
+			type = production 
+			value = 1 
+		}
+		
 	}
 	on_destroyed = {
 		remove_development_from_building = {
 			building = manufactory
 			type = production
 			value = 2
+		}
+		remove_dev_from_building = {
+			building = manufactory 
+			type = production 
+			value = 1
 		}
 	}
 	on_obsolete = {
@@ -2004,6 +2721,14 @@ wharf = {
 		modifier = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
 		}
 		modifier = {
 			factor = 0.4
@@ -2045,6 +2770,12 @@ wharf = {
 }
 
 weapons = {
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
 	manufactory = {
 		copper
 		iron
@@ -2056,12 +2787,22 @@ weapons = {
 			type = production
 			value = 2
 		}
+		add_dev_from_building = {
+			building = manufactory 
+			type = manpower 
+			value = 1 
+		}
 	}
 	on_destroyed = {
 		remove_development_from_building = {
 			building = manufactory
 			type = production
 			value = 2
+		}
+		remove_dev_from_building = {
+			building = manufactory 
+			type = manpower 
+			value = 1
 		}
 	}
 	on_obsolete = {
@@ -2072,6 +2813,14 @@ weapons = {
 		modifier = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
 		}
 		modifier = {
 			factor = 0.4
@@ -2113,6 +2862,12 @@ weapons = {
 }
 
 textile = {
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
 	manufactory = {
 		wool
 		cloth
@@ -2126,12 +2881,22 @@ textile = {
 			type = production
 			value = 2
 		}
+		add_dev_from_building = {
+			building = manufactory 
+			type = production 
+			value = 1 
+		}
 	}
 	on_destroyed = {
 		remove_development_from_building = {
 			building = manufactory
 			type = production
 			value = 2
+		}
+		remove_dev_from_building = {
+			building = manufactory 
+			type = production 
+			value = 1
 		}
 	}
 	on_obsolete = {
@@ -2142,6 +2907,14 @@ textile = {
 		modifier = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
 		}
 		modifier = {
 			factor = 0.4
@@ -2183,6 +2956,12 @@ textile = {
 }
 
 plantations = {
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
 	manufactory = {
 		coffee
 		cotton
@@ -2198,12 +2977,22 @@ plantations = {
 			type = production
 			value = 2
 		}
+		add_dev_from_building = {
+			building = manufactory 
+			type = production 
+			value = 1 
+		}
 	}
 	on_destroyed = {
 		remove_development_from_building = {
 			building = manufactory
 			type = production
 			value = 2
+		}
+		remove_dev_from_building = {
+			building = manufactory 
+			type = production 
+			value = 1
 		}
 	}
 	on_obsolete = {
@@ -2214,6 +3003,14 @@ plantations = {
 		modifier = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
 		}
 		modifier = {
 			factor = 0.4
@@ -2255,6 +3052,12 @@ plantations = {
 }
 
 tradecompany = {
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
 	manufactory = {
 		ivory
 		slaves
@@ -2270,12 +3073,22 @@ tradecompany = {
 			type = production
 			value = 2
 		}
+		add_dev_from_building = {
+			building = manufactory 
+			type = production 
+			value = 1 
+		}
 	}
 	on_destroyed = {
 		remove_development_from_building = {
 			building = manufactory
 			type = production
 			value = 2
+		}
+		remove_dev_from_building = {
+			building = manufactory 
+			type = production 
+			value = 1
 		}
 	}
 	on_obsolete = {
@@ -2286,6 +3099,14 @@ tradecompany = {
 		modifier = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
 		}
 		modifier = {
 			factor = 0.4
@@ -2327,6 +3148,12 @@ tradecompany = {
 }
 
 farm_estate = {
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
 	manufactory = {
 		grain
 		livestock
@@ -2339,12 +3166,22 @@ farm_estate = {
 			type = production
 			value = 2
 		}
+		add_dev_from_building = {
+			building = manufactory 
+			type = production 
+			value = 1
+		}
 	}
 	on_destroyed = {
-		remove_development_from_building = {
-			building = manufactory
-			type = production
-			value = 2
+		add_dev_from_building = {
+			building = manufactory 
+			type = production 
+			value = 1 
+		}
+		remove_dev_from_building = {
+			building = manufactory 
+			type = production 
+			value = 1
 		}
 	}
 	on_obsolete = {
@@ -2355,6 +3192,14 @@ farm_estate = {
 		modifier = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
 		}
 		modifier = {
 			factor = 0.4
@@ -2396,6 +3241,12 @@ farm_estate = {
 }
 
 mills = {
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
 	manufactory = {
 		paper
 		gems
@@ -2410,12 +3261,22 @@ mills = {
 			type = production
 			value = 2
 		}
+		add_dev_from_building = {
+			building = manufactory 
+			type = production 
+			value = 1 
+		}
 	}
 	on_destroyed = {
 		remove_development_from_building = {
 			building = manufactory
 			type = production
 			value = 2
+		}
+		remove_dev_from_building = {
+			building = manufactory 
+			type = production 
+			value = 1
 		}
 	}
 	on_obsolete = {
@@ -2426,6 +3287,14 @@ mills = {
 		modifier = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
 		}
 		modifier = {
 			factor = 0.4
@@ -2467,6 +3336,12 @@ mills = {
 }
 
 furnace = {
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
 	manufactory = {
 		coal
 	}
@@ -2499,30 +3374,76 @@ furnace = {
 
 	ai_will_do = {
 		factor = 2000.0
+		modifier = {
+			factor = 4.0
+			development = 10
+		}
 	}
 }
 
 ramparts = {
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
 	manufactory = {
 		all
 	}
 	modifier = {
 		local_hostile_attrition = 1
 		local_defensiveness = 0.15
+		local_defender_dice_roll_bonus = 1
 	}
 	onmap = no
 	show_separate = yes # Means as a manufactory it will be shown according to the old way
-
-	ai_will_do = {
-		factor = 1
-		modifier = {
-			factor = 0
-			FROM = { num_of_loans = 1 }
+	
+	on_built = {
+		add_dev_from_building = {
+			building = manufactory 
+			type = manpower 
+			value = 1 
 		}
+		if = {
+			limit = {
+				owner = {
+					has_estate_privilege = estate_nobles_development_of_castles
+				}
+				NOT = { has_province_modifier = estate_nobles_development_of_castles_ramparts_mod }
+			}
+			add_province_modifier = {
+				name = estate_nobles_development_of_castles_ramparts_mod
+				duration = -1
+			}
+		}
+	}
+	
+	on_destroyed = {
+		remove_dev_from_building = {
+			building = manufactory 
+			type = manpower 
+			value = 1
+		}
+		if = {
+			limit = {
+				has_province_modifier = estate_nobles_development_of_castles_ramparts_mod
+			}
+			remove_province_modifier = estate_nobles_development_of_castles_ramparts_mod
+		}
+	}
+	ai_will_do = {
+		factor = 0
 	}
 }
 
 soldier_households = {
+	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
+	}
 	manufactory = {
 		all
 	}
@@ -2548,12 +3469,39 @@ soldier_households = {
 			type = production
 			value = 2
 		}
+		add_dev_from_building = {
+			building = manufactory 
+			type = manpower 
+			value = 1 
+		}
+		if = {
+			limit = {
+				FROM = {
+					has_government_attribute = improved_military_buildings
+				}
+			}
+			add_province_modifier = {
+				name = wei_suo_system_reform_soldier_households_modifier
+				duration = -1
+			}
+		}
 	}
 	on_destroyed = {
 		remove_development_from_building = {
 			building = manufactory
 			type = production
 			value = 2
+		}
+		remove_dev_from_building = {
+			building = manufactory 
+			type = manpower 
+			value = 1
+		}
+		if = {
+			limit = {
+				has_province_modifier = wei_suo_system_reform_soldier_households_modifier
+			}
+			remove_province_modifier = wei_suo_system_reform_soldier_households_modifier
 		}
 	}
 	on_obsolete = {
@@ -2564,6 +3512,22 @@ soldier_households = {
 		modifier = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 0.1
+			xorme_high_quality_trade_goods_trigger = yes
+		}
+		modifier = {
+			factor = 0.2
+			xorme_medium_quality_trade_goods_trigger = yes
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
 		}
 		modifier = {
 			factor = 0.5
@@ -2588,6 +3552,10 @@ soldier_households = {
 				has_building = training_fields
 			}
 		}
+		modifier = {
+			factor = 1000
+			xorme_additional_manpower_goods_trigger = yes
+		}
 	}
 }
 
@@ -2605,6 +3573,10 @@ impressment_offices = {
 
 	build_trigger = {
 		has_port = yes
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
 	}
 
 	modifier = {
@@ -2625,12 +3597,22 @@ impressment_offices = {
 			type = manpower
 			value = 2
 		}
+		add_dev_from_building = {
+			building = impressment_offices 
+			type = manpower 
+			value = 1 
+		}
 	}
 	on_destroyed = {
 		remove_development_from_building = {
 			building = impressment_offices
 			type = manpower
 			value = 2
+		}
+		remove_dev_from_building = {
+			building = impressment_offices 
+			type = manpower 
+			value = 1 
 		}
 	}
 	on_obsolete = {
@@ -2642,9 +3624,24 @@ impressment_offices = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
 		}
+		modifier = {
+			factor = 0.1
+			xorme_high_quality_trade_goods_trigger = yes
+		}
+		modifier = {
+			factor = 0.2
+			xorme_medium_quality_trade_goods_trigger = yes
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
+		}
 	}
 }
-
 
 state_house = {
 	manufactory = {
@@ -2658,6 +3655,10 @@ state_house = {
 	}
 
 	build_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
 		NOT = {
 			area_for_scope_province = {
 				FROM = {
@@ -2670,8 +3671,12 @@ state_house = {
 			}
 		}
 	}
-	
+
 	keep_trigger = {
+		if = {
+			limit = { FROM = { ai = yes } }
+			FROM = { NOT = { num_of_loans = 4 } }
+		}
 		NOT = {
 			area_for_scope_province = {
 				NOT = { province_id = root }
@@ -2685,14 +3690,18 @@ state_house = {
 			}
 		}
 	}
-
 	modifier = {
 		statewide_governing_cost = -0.2
 		min_local_autonomy = -5
+		local_governing_cost = -0.15
+		local_governing_cost_increase = -10
+		allowed_num_of_buildings = 1
 	}
 	bonus_modifier = {
 		statewide_governing_cost = -0.2
 		min_local_autonomy = -5
+		local_governing_cost = -0.15
+		local_governing_cost_increase = -10
 	}
 	onmap = no
 	show_separate = yes # Means as a manufactory it will be shown according to the old way
@@ -2714,10 +3723,18 @@ state_house = {
 	}
 
 	ai_will_do = {
-		factor = 25.0
+		factor = 35.0
 		modifier = {
 			factor = 0
 			FROM = { num_of_loans = 1 }
+		}
+		modifier = {
+			factor = 4.5
+			owner = { is_subject = yes }
+		}
+		modifier = {
+			factor = 100.0
+			FROM = { treasury = 10000 }
 		}
 		modifier = {
 			factor = 0

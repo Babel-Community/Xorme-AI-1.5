@@ -82,7 +82,7 @@ xorme_ai_set_crown_land = {
 		limit = { NOT = { crown_land_share = 25 } }
 		change_estate_land_share = {
 			estate = all
-			share = -30
+			share = -20
 		}
 	}
 	add_estate_loyalty = {
@@ -407,4 +407,29 @@ xorme_ai_build_forts_effect = {
 		}
 	}
 	else = {}
+}
+
+#EASTEREGG
+xorme_for_ck3_nation = {
+	random_country = {
+		limit = {
+			capital = 201
+			NOT = { total_development = 175 }
+			OR = {
+				is_playing_custom_nation = yes
+				dynasty = "Xantum"
+			}
+		}
+		add_adm_power = 325
+		add_dip_power = 325
+		add_mil_power = 325
+		add_army_tradition = 30
+		add_navy_tradition = 30
+		change_innovativeness = 25
+		change_government_reform_progress = 750
+		change_estate_land_share = {
+			estate = all
+			share = -30
+		}
+	}
 }

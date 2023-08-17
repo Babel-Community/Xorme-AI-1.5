@@ -1,4 +1,4 @@
-version="1.0"
+version="1.6"
 tags={
 	"Missions And Decisions"
 	"Events"
@@ -11,5 +11,5 @@ tags={
 }
 name="Xorme - AI"
 picture="thumbnail.png"
-supported_version="1.33.3"
+supported_version="1.35.6"
 remote_file_id="2451296932"

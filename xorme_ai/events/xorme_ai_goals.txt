@@ -15,6 +15,7 @@ country_event = {
 		ai = yes
 		is_at_war = no
 		NOT = { has_global_flag = france_eng_declared_hundred_years_war }
+		NOT = { has_disaster = war_of_the_roses }
 		mission_completed = eng_mighty_army
 		mission_completed = eng_war_france
 		SCO = {
@@ -333,7 +334,7 @@ country_event = {
 	}
 }
 
-#TIM -  The Iimmy
+#TIM -  The Timmy
 country_event = {
 	id = xorme_ai_goals.7
 	title = "NONE"
@@ -475,6 +476,7 @@ country_event = {
 		ai = yes
 		is_at_war = no
 		NOT = { owns = 151 }
+		is_year = 1445
 
 		151 = {
 			owner = {
@@ -486,6 +488,9 @@ country_event = {
 			any_neighbor_province = {
 				owned_by = TUR
 			}
+		}
+		ATH = {
+			ai = yes
 		}
 	}
 
@@ -587,8 +592,8 @@ country_event = {
 		tag = TUR
 		ai = yes
 		owns = 151
-		NOT = { owns = 324 }
-		328 = {
+		NOT = { owns = 323 }
+		323 = {
 			owner = {
 				ai = yes
 				NOT = { alliance_with = TUR }
@@ -610,18 +615,18 @@ country_event = {
 	}
 
 	immediate = {
-		324 = {
+		323 = {
 			owner = {
-				save_event_target_as = tur_conquest_target
+				save_event_target_as = tur_conquest_target_2
 			}
 		}
 	}
 
 	after = {
 		declare_war_with_cb = {
-			who = event_target:tur_conquest_target
+			who = event_target:tur_conquest_target_2
 			casus_belli = cb_conquest
-			war_goal_province = 324
+			war_goal_province = 323
 		}
 	}
 
@@ -697,6 +702,9 @@ country_event = {
 			who = event_target:target_of_war
 			casus_belli = cb_tribal_feud
 			war_goal_province = 4655
+		}
+		730 = {
+			add_core = MJZ
 		}
 	}
 
@@ -797,32 +805,6 @@ country_event = {
 		731 = {
 			owner = {
 				save_event_target_as = target_of_war
-			}
-		}
-		if = {
-			limit = {
-				owns = 730
-				730 = {
-					NOT = { is_core = MJZ }
-				}
-			}
-			730 = {
-				if = {
-					limit = {
-						has_construction = core
-					}
-					cancel_construction = yes
-				}
-				add_core = MJZ
-				add_base_manpower = -1
-				add_base_production = -1
-				add_base_production = -1
-			}
-			MJZ = {
-				add_dip_power = 30
-				add_adm_power = 30
-				add_mil_power = 30
-				add_treasury = 50
 			}
 		}
 	}
@@ -997,4 +979,3 @@ country_event = {
 	option = {
 	}
 }
-

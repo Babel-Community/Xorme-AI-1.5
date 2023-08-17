@@ -9,6 +9,7 @@ country_event = {
 	hidden = yes
 
 	trigger = {
+		is_at_war = no
 		OR = {
 			is_date = 1500.2.2	
 			is_date = 1550.2.2		

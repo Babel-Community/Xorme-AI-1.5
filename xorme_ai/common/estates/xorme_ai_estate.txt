@@ -3,9 +3,11 @@ xorme_ai_estate = {
 
 	# If true, country will get estate
 	trigger = {
+		NOT = { is_subject_of_type = xorme_moh_administrative_district }
 		ROOT = {
 			ai = yes
 			has_any_estates = yes
+			num_of_provinces_in_states = 2
 		}
 	}
 
@@ -48,5 +50,5 @@ xorme_ai_estate = {
 		xorme_ai_agenda_build_production_building_in_province
 		xorme_ai_agenda_build_tax_building_in_province
 	}
-	influence_from_dev_modifier = 0
+	influence_from_dev_modifier = 0.01
 }

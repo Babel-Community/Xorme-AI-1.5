@@ -11,15 +11,10 @@ country_decisions = {
 
 		allow = {
 			is_papal_controller = yes
-			reform_desire = 0.05
+			reform_desire = 0.5
 			curia_treasury_size = 2500
-
-			OR = {
-				is_year = 1500
-				reform_desire = 0.95
-			}
 		}
-		
+
 		effect = {
 			ROOT = {
 				add_country_modifier = {
@@ -32,7 +27,7 @@ country_decisions = {
 			add_reform_desire_scale = 0.5
 		}
 		ai_will_do = {
-			factor = 10.0
+			factor = 100.0
 			modifier = {
 				factor = 0
 				NOT = { reform_desire = 0.7 }

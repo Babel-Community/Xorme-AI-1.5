@@ -88,6 +88,9 @@ xorme_ai_cheat_make_me_cry_ai = {
 xorme_ai_cheat_make_me_cry_player = {
 	potential = {
 		has_global_flag = xorme_ai_make_me_cry_active
+		ROOT = {
+			ai = no
+		}
 	}
 
 	trigger = {
@@ -101,39 +104,11 @@ xorme_ai_cheat_make_me_cry_player = {
 	all_power_cost = 0.05
 }
 
-xorme_ai_valid_nation = {
-	potential = {
-		has_global_flag = xorme_ai_initialization_happened
-		ai = yes
-	}
-
-	trigger = {
-		ROOT = {
-			NOT = { government = native }
-			total_development = 60
-		}
-	}
-	province_warscore_cost = -0.05
-	global_tax_income = 12
-	church_loyalty_modifier = 0.075
-	nobles_loyalty_modifier = 0.075
-	burghers_loyalty_modifier = 0.075
-	cossacks_loyalty_modifier = 0.05
-	brahmins_hindu_loyalty_modifier = 0.05
-	brahmins_muslim_loyalty_modifier = 0.05
-	brahmins_other_loyalty_modifier = 0.05
-	maratha_loyalty_modifier = 0.05
-	vaisyas_loyalty_modifier = 0.05
-	cossacks_loyalty_modifier = 0.05
-	nomadic_tribes_loyalty_modifier = 0.05
-	dhimmi_loyalty_modifier = 0.05
-	jains_loyalty_modifier = 0.05
-	rajput_loyalty_modifier = 0.05
-}
-
 xorme_ai_great_power = {
 	potential = {
-		has_country_modifier = xorme_ai_valid_nation
+		ai = yes
+		NOT = { primitives = yes }
+		NOT = { government = native }
 		OR = {
 			is_great_power = yes
 			OR = {
@@ -143,8 +118,13 @@ xorme_ai_great_power = {
 				}
 				AND = {
 					is_year = 1500
-					total_development = 525
-				}	
+					NOT = { is_year = 1600 }
+					total_development = 300
+				}
+				AND = {
+					is_year = 1600
+					total_development = 600
+				}
 			}
 		}
 	}
@@ -152,14 +132,16 @@ xorme_ai_great_power = {
 	trigger = {
 		always = yes
 	}
-	army_tradition_decay = -0.01
-	global_tax_income = 12
-	state_maintenance_modifier = -0.35
+	global_tax_income = 24
+	national_focus_years = -10	
+	technology_cost = -0.05
 }
 
 xorme_ai_valid_for_fort_script = {
 	potential = {
-		has_country_modifier = xorme_ai_valid_nation
+		ai = yes
+		NOT = { primitives = yes }
+		NOT = { government = native }
 		NOT = { has_country_modifier = xorme_ai_build_fort_cooldown }
 	}
 
@@ -169,5 +151,5 @@ xorme_ai_valid_for_fort_script = {
 		treasury = 350
 		NOT = { num_of_loans = 1 }
 	}
-	
+
 }

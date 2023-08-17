@@ -1,3 +1,24 @@
+#VALID NATION
+xorme_ai_valid_nation = {
+	ai = yes
+	NOT = { primitives = yes }
+	NOT = { government = native }
+	total_development = 60
+}
+
+#BUILDINGS
+xorme_has_every_essential_building_trigger = {
+	AND = {
+		has_manufactory_trigger = yes
+		has_courthouse_building_trigger = yes
+		OR = {
+			has_tax_building_trigger = yes
+			has_production_building_trigger = yes
+		}
+	}
+}
+
+#REGION
 xorme_wealthy_region_trigger = {
 	capital_scope = {
 		OR = {
@@ -351,36 +372,97 @@ xorme_ai_can_build_fort = {
 	if = {
         limit = {
 			mil_tech = 24
-            treasury = 825
-            monthly_income = 30
-            current_income_balance = 10
+            treasury = 800
+            monthly_income = 25
+            current_income_balance = 8
         }
     }
     else_if = {
         limit = {
 			mil_tech = 19
-            treasury = 625
-            monthly_income = 25
-            current_income_balance = 9
+            treasury = 600
+            monthly_income = 20
+            current_income_balance = 6
         }
     }
     else_if = {
         limit = {
 			mil_tech = 14
-            treasury = 425
-            monthly_income = 20
-            current_income_balance = 7
+            treasury = 400
+            monthly_income = 15
+            current_income_balance = 5
         }
     }
     else_if = {
         limit = { 
 			mil_tech = 1
             treasury = 225
-            monthly_income = 15
-            current_income_balance = 5
+            monthly_income = 10
+            current_income_balance = 4
         }
     }
 	else = {
 		always = no
 	}
 }
+
+xorme_best_fort_province_trigger = {
+	OR = {
+		province_id = 151
+		province_id = 4779
+		province_id = 316
+		province_id = 2296
+		province_id = 226
+		province_id = 1749
+		province_id = 334
+		province_id = 1751
+		province_id = 357
+		province_id = 365
+		province_id = 4299
+		province_id = 1856
+		province_id = 280
+		province_id = 1231
+		province_id = 2148
+	}
+}
+
+xorme_great_project_for_fort_trigger = {
+	OR = {
+		has_great_project = {
+			type = kronborg
+			tier = 1
+		}
+		has_great_project = {
+			type = himeji_castle
+			tier = 1
+		}
+		has_great_project = {
+			type = ait_benhaddou
+			tier = 1
+		}
+		has_great_project = {
+			type = khami_ruins
+			tier = 1
+		}
+		has_great_project = {
+			type = ambras_castle
+			tier = 1
+		}
+		has_great_project = {
+			type = malbork_castle
+			tier = 1
+		}
+		has_great_project = {
+			type = bam_citadel
+			tier = 1
+		}
+		has_great_project = {
+			type = mehrangarh_fort
+			tier = 1
+		}
+		has_great_project = {
+			type = tower_of_london
+			tier = 1
+		}
+	}
+} 

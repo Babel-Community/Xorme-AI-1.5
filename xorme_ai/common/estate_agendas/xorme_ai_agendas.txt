@@ -130,6 +130,8 @@ xorme_ai_agenda_conquer_core_province = {
 				estate = all
 				loyalty = 10
 			}
+			add_mil_power = 50
+			add_adm_power = 25
 		}
 	}
 
@@ -185,6 +187,9 @@ xorme_ai_agenda_recover_stability_in_country = {
 			loyalty = 5
 		}
 		add_prestige = 10
+		add_mil_power = 25
+		add_adm_power = 25
+		add_dip_power = 25
     }
 
     failing_effect = {
@@ -248,7 +253,7 @@ xorme_ai_agenda_prepare_to_war_with_country = {
 
     task_completed_effect = {
 		add_prestige = 5
-		add_mil_power = 25
+		add_mil_power = 50
 		add_estate_loyalty = {
 			estate = all
 			loyalty = 5
@@ -396,6 +401,27 @@ xorme_ai_agenda_conquer_neighbouring_province = {
 				estate = all
 				loyalty = 10
 			}
+			add_mil_power = 35
+			add_dip_power = 10
+			add_adm_power = 10
+		}
+		if = {
+			limit = {
+				any_owned_province = {
+					has_owner_culture = no
+					NOT = { has_construction = any }
+				}
+			}
+			random_owned_province = {
+				limit = {
+					has_owner_culture = no
+					NOT = { has_construction = any }
+				}
+				add_culture_construction = {
+					speed = 0.5
+					cost = 0.1
+				}
+			}
 		}
 	}
 
@@ -524,6 +550,9 @@ xorme_ai_agenda_build_production_building_in_province = {
 			add_base_production = 1
 			remove_province_modifier = xorme_ai_agenda_building_spot
 		}
+		add_mil_power = 25
+		add_adm_power = 10
+		add_dip_power = 10
     }
 
 	failing_effect = {
@@ -642,6 +671,8 @@ xorme_ai_agenda_build_tax_building_in_province = {
 			add_base_tax = 1
 			remove_province_modifier = xorme_ai_agenda_building_spot
 		}
+		add_mil_power = 25
+		add_adm_power = 10
     }
 
 	failing_effect = {

@@ -12,47 +12,59 @@ country_event = {
 		has_country_modifier = xorme_ai_valid_for_fort_script
 		NOT = { has_country_modifier = xorme_ai_build_fort_cooldown }
 		OR = {
-			is_month = 3
-			NOT = { is_month = 5 }
-		}
-		OR = {
-			is_month = 9
+			NOT = { is_month = 1 }
 			NOT = { is_month = 11 }
 		}
 	}
 
 	mean_time_to_happen = {
-		days = 13
+		days = 30
 	}
 
 	immediate = {
 		if = {
+			limit = {
+				xorme_ai_can_build_fort = yes
+				capital_scope = {
+					xorme_ai_has_any_fort_trigger = no
+				}
+			}
+			capital_scope = {
+				xorme_ai_build_forts_effect = yes
+			}
+		}
+		else_if = {
 			limit = { 
 				xorme_ai_can_build_fort = yes
 			}
 			random_owned_province = {
 				limit = {
 					OR = {
-						xorme_high_terrain_trigger = yes
-						xorme_forest_terrain_trigger = yes
-						has_terrain = marsh
-					}
-					OR = {
-						is_capital = yes
+						xorme_best_fort_province_trigger = yes
+						xorme_great_project_for_fort_trigger = yes
 						AND = {
-							NOT = {
-								OR = {
-									xorme_ai_is_building_fort_trigger = yes
-									xorme_ai_has_any_fort_trigger = yes
-									has_influencing_fort = yes
-								}
+							OR = {
+								xorme_high_terrain_trigger = yes
+								xorme_forest_terrain_trigger = yes
+								has_terrain = marsh
 							}
-							all_neighbor_province = {
-								NOT = {
-									OR = {
-										xorme_ai_is_building_fort_trigger = yes
-										xorme_ai_has_any_fort_trigger = yes
-										has_influencing_fort = yes
+							OR = {
+								AND = {
+									NOT = {
+										OR = {
+											xorme_ai_is_building_fort_trigger = yes
+											xorme_ai_has_any_fort_trigger = yes
+											has_influencing_fort = yes
+										}
+									}
+									all_neighbor_province = {
+										NOT = {
+											OR = {
+												xorme_ai_is_building_fort_trigger = yes
+												xorme_ai_has_any_fort_trigger = yes
+												has_influencing_fort = yes
+											}
+										}
 									}
 								}
 							}
@@ -68,7 +80,7 @@ country_event = {
 		ROOT = {
 			add_country_modifier = {
 				name = xorme_ai_build_fort_cooldown
-				duration = 512
+				duration = 412
 			}
 		}
 	}

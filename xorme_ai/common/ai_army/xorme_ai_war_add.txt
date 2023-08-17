@@ -4,7 +4,11 @@ province = {
             is_at_war = yes
         }
         eval_add = {
-            factor = 2000.0
+            factor = 2500.0
+            modifier = {
+                factor = 0
+                has_siege = yes
+            }
             modifier = {
                 factor = 0.75
                 fort_level = 1

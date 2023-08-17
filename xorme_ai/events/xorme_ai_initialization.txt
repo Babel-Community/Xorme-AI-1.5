@@ -13,16 +13,19 @@ country_event = {
 		has_game_started = yes
 		has_global_flag = xorme_search_for_players_happened
 		NOT = {
-			has_global_flag = xorme_ai_initialization_happened 
+			has_global_flag = xorme_ai_initialization_happened
 		}
 	}
 
 	immediate = {
 		set_global_flag = xorme_ai_dynamic_cheats_active
+		set_global_flag = xorme_ai_building_scripts_on
+		set_global_flag = xorme_ai_expand_infrastructure_on
 		set_global_flag = xorme_ai_initialization_started
-		random_country = { 
-			limit = { 
+		random_country = {
+			limit = {
 				ai = yes
+				NOT = { has_global_flag = xorme_moh_active }
 				OR = {
 					has_country_modifier = the_mandate_of_heaven
 					has_reform = celestial_empire
@@ -37,6 +40,7 @@ country_event = {
 			xorme_ai_set_crown_land = yes
 			xorme_ai_build_to_force_limit = yes
 			xorme_ai_essentials = yes
+			change_national_focus = MIL
 			if = {
 				limit = { is_free_or_tributary_trigger = yes }
 				country_event = {
@@ -44,9 +48,11 @@ country_event = {
 				}
 			}
 		}
+		#EASTEREGG - main dynasty for ck3 mod
 	}
 
 	after = {
+		xorme_for_ck3_nation = yes
 		every_country = {
 			limit = { ai = no }
 			add_ruler_personality = xorme_ai_personality
@@ -68,6 +74,7 @@ country_event = {
 		}
 		every_country = {
 			limit = { ai = yes }
+			add_treasury = 50
 			if = {
 				limit = {
 					OR = {
@@ -96,6 +103,10 @@ country_event = {
 				ai = yes
 				total_development = 150
 			}
+			add_treasury = 100
+			add_adm_power = 50
+			add_dip_power = 50
+			add_mil_power = 50
 			random_owned_province = {
 				add_unit_construction = {
 					type = infantry
@@ -121,7 +132,7 @@ country_event = {
 	id = xorme_ai_initialization.2
 	title = "NONE"
 	picture = "NONE"
-	desc = "NONE"	
+	desc = "NONE"
 	hidden = yes
 	is_triggered_only = yes
 
